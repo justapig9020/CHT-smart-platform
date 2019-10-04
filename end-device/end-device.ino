@@ -18,12 +18,14 @@
 #define SEL 12 // Pin of select
 #define DATA 2 // Last pin of data, the n wide data line must be wired from 2+n-1 to 2 (inverse the order)
 #define WIDE 4 // The wide of data bus
-#define DEBUG  // Set the debug mode (Modify DEBUG to _DEBUG to disable the debug functions)
+//#define DEBUG  // Set the debug mode (Modify DEBUG to _DEBUG to disable the debug functions)
 
 /* ================= */
 
 /* == Global variable == */
 int clk;    // The clock frequence (HZ)
+int cyc;  // The cycle of the clock (millisecend)
+unsigned int cStart; // Current cycle start time
 int r_size; // The size of row of tile
 int c_size; // The size of column of tile
 int len;    // The length of tile
@@ -38,6 +40,9 @@ char *tile; // The array of the tile
 /* ===================== */
 
 
+
+
+/*
 #ifdef DEBUG
 
 void wait_clk (unsigned int start)
@@ -53,8 +58,9 @@ void wait_clk (unsigned int start)
 void wait_clk (unsigned int start) {}
 
 #endif
+*/
 
-
+/*
 inline void clk_on()
 {
     digitalWrite (CLK, 1);
@@ -62,6 +68,24 @@ inline void clk_on()
 
 inline void clk_off()
 {
+    digitalWrite (CLK, 0);
+}
+*/
+
+inline void sel_on()
+{
+    digitalWrite (SEL, 1);
+}
+
+inline void sel_off()
+{
+    digitalWrite (SEL, 0);
+}
+
+inline void exe_clk()
+{   
+    digitalWrite (CLK, 1);
+    delay(cyc);
     digitalWrite (CLK, 0);
 }
 
@@ -96,6 +120,37 @@ char get_data ()
     return d;  
 }
 
+/*
+void start_clk ()
+{
+    cStart = millis ()
+    clk_on ();
+}
+
+void wait_clk ()
+{
+    unsigned int cur;
+    do {
+        unsigned int dif;
+        cur = millis ();
+        dif = cur - cStart;
+    } while (dif < cyc);
+    clk_off ();
+}
+*/
+
+// Pass data to gateway
+void send_data ()
+{
+
+}
+
+// For reduce power
+void sleep_mode ()
+{
+
+}
+
 void setup() 
 {
     pinMode (CLK, OUTPUT);
@@ -112,10 +167,18 @@ void setup()
 
 void loop() 
 {
-    unsigned int sTime;
-    sTime = millis ();
-    digitalWrite (SEL, 1);
-    clk_on ();
-    wait_clk (sTime);
-    clk_off ();
+    sel_on ();
+    exe_clk ();
+    sel_off ();
+    for (int i=0; i<r_size; i++) {
+        for (int o=0; o<c_size; o+) {
+            if (i & 0x1)
+                tile [i][c_size-o] = get_data ();
+            else
+                tile [i][o] = get_data ();
+            exe_clk ();
+        }
+    }
+    send_data ();
+    sleep_mode ();
 }
