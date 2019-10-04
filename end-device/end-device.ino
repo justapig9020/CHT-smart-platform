@@ -18,7 +18,7 @@
 #define SEL 12 // Pin of select
 #define DATA 2 // Last pin of data, the n wide data line must be wired from 2+n-1 to 2 (inverse the order)
 #define WIDE 4 // The wide of data bus
-#define FREQ 1 // The frequence of clock
+#define FREQ 100 // The frequence of clock
 //#define DEBUG  // Set the debug mode (Modify DEBUG to _DEBUG to disable the debug functions)
 
 /* ================= */
@@ -164,15 +164,9 @@ void setup()
     Serial.begin (BAUD);
     tile = init_size ();
     set_clk (FREQ);
-    Serial.println ("Initialized!");
-    Serial.print ("Clock: ");
-    Serial.print (clk);
-    Serial.println (" HZ");
-    Serial.print ("Tile size: ");
-    Serial.print (r_size);
-    Serial.print (" * ");
-    Serial.println (c_size);
-    Serial.println (cyc);
+    Serial.println ("==== Initialized ====");
+    Serial.println (String("") + "Clock: " + clk + " HZ");
+    Serial.println (String("") + "Tile size: " + r_size + " * " + c_size);
 }
 
 void loop() 
@@ -189,12 +183,7 @@ void loop()
             else
                 d = *(tile+i*c_size+c_size) = get_data ();
             exe_clk ();
-            Serial.print ("data ");
-            Serial.print (i);
-            Serial.print (" * ");
-            Serial.print (o);
-            Serial.print (": ");
-            Serial.println (d);
+            Serial.println (String("") + "data " + i + " * " + o + ": "+ d);
         }
     }
     send_data ();
