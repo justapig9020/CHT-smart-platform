@@ -1,3 +1,13 @@
+/* == tile form == 
+ *  
+ *  -----------
+ *  | b0 | b1 |
+ *  ----------- 
+ *  | b2 | b3 |
+ *  -----------
+ *  
+ */
+
 /* == Wiring guideline == 
 
     name | pin | function
@@ -6,7 +16,7 @@
     -----|-----|---------
     SEL  | 12  | select
     -----|-----|---------
-    DATA |[2,5]| data, the order of data must be inverse than the order of physical data
+    DATA |[2,5]| data, b0 > 2, b1 > 3, b2 > 4, b3 > 5
     ---------------------
 
    ====================== */
@@ -14,11 +24,11 @@
 
 /* == definitions == */
 #define CLK 13 // Pin of clock
-#define BAUD 9600 // The baud rate of serial
 #define SEL 12 // Pin of select
 #define DATA 2 // Last pin of data, the n wide data line must be wired from 2+n-1 to 2 (inverse the order)
-#define WIDE 4 // The wide of data bus
-#define FREQ 100 // The frequence of clock
+#define WIDE 4 // The wide of data bus, code must be modify when wide over 8 bits
+#define FREQ 1  // The frequence of clock
+#define BAUD 9600 // The baud rate of serial
 //#define DEBUG  // Set the debug mode (Modify DEBUG to _DEBUG to disable the debug functions)
 
 /* ================= */
@@ -171,11 +181,11 @@ void setup()
 
 void loop() 
 {
-    Serial.println ("\n==== Loop ====");
+     Serial.println ("\n==== Loop ====");
+    int d;
     sel_on ();
     exe_clk ();
     sel_off ();
-    int d;
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
             if (i & 0x1)
@@ -186,6 +196,6 @@ void loop()
             Serial.println (String("") + "data " + i + " * " + o + ": "+ d);
         }
     }
-    send_data ();
-    sleep_mode ();
+    //send_data ();
+    //sleep_mode ();
 }
