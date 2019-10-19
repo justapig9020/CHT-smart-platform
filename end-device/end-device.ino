@@ -181,7 +181,7 @@ void setup()
 
 void loop() 
 {
-     Serial.println ("\n==== Loop ====");
+    Serial.println ("\n==== Loop ====");
     int d;
     sel_on ();
     exe_clk ();
@@ -189,10 +189,16 @@ void loop()
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
             if (i & 0x1)
-                d = *(tile+i*c_size+c_size-o) = get_data ();
+                *(tile+i*c_size+c_size-o) = get_data ();
             else
-                d = *(tile+i*c_size+c_size) = get_data ();
+                *(tile+i*c_size+o) = get_data ();
             exe_clk ();
+        }
+    }
+    
+    for (int i=0; i<r_size; i++) {
+        for (int o=0; o<c_size; o++) {
+            d = *(tile+i*c_size+0);
             Serial.println (String("") + "data " + i + " * " + o + ": "+ d);
         }
     }
