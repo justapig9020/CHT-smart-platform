@@ -198,7 +198,7 @@ void loop()
     
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
-            d = *(tile+i*c_size+0);
+            d = *(tile+i*c_size+o);
             Serial.println (String("") + "data " + i + " * " + o + ": "+ d);
         }
     }
