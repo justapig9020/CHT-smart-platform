@@ -1,3 +1,4 @@
+
 /* == tile form == 
  *  
  *  -----------
@@ -9,7 +10,6 @@
  */
 
 /* == Wiring guideline == 
-
     name | pin | function
     -----|-----|---------
     CLK  | 13  | clock
@@ -18,7 +18,6 @@
     -----|-----|---------
     DATA |[2,5]| data, b0 > 2, b1 > 3, b2 > 4, b3 > 5
     ---------------------
-
    ====================== */
 
 
@@ -60,7 +59,6 @@ char *tile; // The array of the tile
 
 /*
 #ifdef DEBUG
-
 void wait_clk (unsigned int start)
 {
     unsigned int _end
@@ -68,11 +66,8 @@ void wait_clk (unsigned int start)
         _end = millis ();
     } while (_end - start < wait);
 }
-
 #else
-
 void wait_clk (unsigned int start) {}
-
 #endif
 */
 
@@ -81,7 +76,6 @@ inline void clk_on()
 {
     digitalWrite (CLK, 1);
 }
-
 inline void clk_off()
 {
     digitalWrite (CLK, 0);
@@ -145,7 +139,6 @@ void start_clk ()
     cStart = millis ()
     clk_on ();
 }
-
 void wait_clk ()
 {
     unsigned int cur;
@@ -183,12 +176,16 @@ void setup()
     tile = init_size ();
     set_clk (FREQ);
     Serial.println ("=== waiting wifi connect ===");
+    /*
     while (1) {
         if (sSerial.available ()) {
-            if (sSerial.read () == "c")
+            if (sSerial.read () == 'c')
                 break;
         }
-    }
+    }*/
+    delay(1000);
+    Serial.println("WIFI Connected");
+    
 }
 
 void loop() 
@@ -202,24 +199,24 @@ void loop()
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
             if (i & 0x1)
-                d = *(tile+i*c_size+c_size-o) = get_data ();
+                d = *(tile+i*c_size+c_size-o) = 3;
             else
-                d = *(tile+i*c_size+o) = get_data ();
+                d = *(tile+i*c_size+o) = 3;
             exe_clk ();
         }
     }
     
-    sSerial.print (0xAF);
+    //sSerial.print ('\xAF');
 
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
             d = c = *(tile + i * c_size + o);
             Serial.println (String("") + "data " + i + " * " + o + ": "+ d);
-            sSerial.print (c);
+            sSerial.print ((char)(c+65));
         }
     }
 
-    sSerial.print (0xFF);
+    sSerial.print ('Z');
 
     //send_data ();
     //sleep_mode ();
