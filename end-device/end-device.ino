@@ -1,7 +1,7 @@
 /* == tile form == 
  *  
  *  -----------
- *  | b0 | b1 |
+ *  | b0 | b1 | 
  *  ----------- 
  *  | b2 | b3 |
  *  -----------
@@ -188,7 +188,7 @@ void loop()
     sel_off ();
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
-            if (i & 0x1)
+            if (i & 0x1 == 0)
                 *(tile+i*c_size+c_size-o) = get_data ();
             else
                 *(tile+i*c_size+o) = get_data ();
