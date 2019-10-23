@@ -1,7 +1,7 @@
 /* == tile form == 
  *  
  *  -----------
- *  | b0 | b1 | 
+ *  | b0 | b1 |
  *  ----------- 
  *  | b2 | b3 |
  *  -----------
@@ -22,14 +22,19 @@
    ====================== */
 
 
+#include <SoftwareSerial.h>
+
 /* == definitions == */
 #define CLK 13 // Pin of clock
 #define SEL 12 // Pin of select
 #define DATA 2 // Last pin of data, the n wide data line must be wired from 2+n-1 to 2 (inverse the order)
 #define WIDE 4 // The wide of data bus, code must be modify when wide over 8 bits
 #define FREQ 1  // The frequence of clock
+#define W_BAUD 115200
 #define BAUD 9600 // The baud rate of serial
 //#define DEBUG  // Set the debug mode (Modify DEBUG to _DEBUG to disable the debug functions)
+#define SWS_TX 7
+#define SWS_RX 8
 
 /* ================= */
 
@@ -165,6 +170,8 @@ void sleep_mode ()
 
 }
 
+SoftwareSerial sSerial(SWS_RX, SWS_TX);
+
 void setup() 
 {
     pinMode (CLK, OUTPUT);
@@ -172,36 +179,48 @@ void setup()
     for (int i=0; i<WIDE; i++)
         pinMode (DATA+i, INPUT);
     Serial.begin (BAUD);
+    sSerial.begin (W_BAUD);
     tile = init_size ();
     set_clk (FREQ);
-    Serial.println ("==== Initialized ====");
-    Serial.println (String("") + "Clock: " + clk + " HZ");
-    Serial.println (String("") + "Tile size: " + r_size + " * " + c_size);
+    Serial.println ("=== waiting wifi connect ===");
+    while (1) {
+        if (sSerial.available ()) {
+            if (sSerial.read () == "c")
+                break;
+        }
+    }
 }
 
 void loop() 
 {
     Serial.println ("\n==== Loop ====");
     int d;
+    char c;
     sel_on ();
     exe_clk ();
     sel_off ();
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
-            if (i & 0x1 == 0)
-                *(tile+i*c_size+c_size-o) = get_data ();
+            if (i & 0x1)
+                d = *(tile+i*c_size+c_size-o) = get_data ();
             else
-                *(tile+i*c_size+o) = get_data ();
+                d = *(tile+i*c_size+o) = get_data ();
             exe_clk ();
         }
     }
     
+    sSerial.print (0xAF);
+
     for (int i=0; i<r_size; i++) {
         for (int o=0; o<c_size; o++) {
-            d = *(tile+i*c_size+o);
+            d = c = *(tile + i * c_size + o);
             Serial.println (String("") + "data " + i + " * " + o + ": "+ d);
+            sSerial.print (c);
         }
     }
+
+    sSerial.print (0xFF);
+
     //send_data ();
     //sleep_mode ();
 }
