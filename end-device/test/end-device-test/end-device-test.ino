@@ -86,13 +86,13 @@ inline void clk_off()
 // Select ON 
 inline void sel_on()
 {
-    digitalWrite (SEL, 1);
+    digitalWrite (SEL, 0);
 }
 
 //Select OFF
 inline void sel_off()
 {
-    digitalWrite (SEL, 0);
+    digitalWrite (SEL, 1);
 }
 
 inline void exe_clk()
@@ -109,7 +109,7 @@ char *init_size()
 {
     char *arr = NULL;
     r_size = 1;
-    c_size = 2;
+    c_size = 3;
     len = r_size * c_size;
     while (!arr)
         arr = malloc (r_size * c_size);
@@ -186,22 +186,17 @@ void loop()
     sel_on ();
     exe_clk ();
     sel_off ();
-    for (int i=0; i<r_size; i++) {
-        for (int o=0; o<c_size; o++) {
-            if (i & 0x1 == 0)
-                *(tile+i*c_size+c_size-o) = get_data ();
-            else
-                *(tile+i*c_size+o) = get_data ();
-            exe_clk ();
-        }
+    //while (!Serial.available ());
+    //Serial.read();
+    for (int i=0; i<len; i++) {
+        int buff;
+        buff = get_data ();
+        Serial.println (String("") + buff);
+        exe_clk ();
+        //while (!Serial.available ());
+        //Serial.read();
     }
     
-    for (int i=0; i<r_size; i++) {
-        for (int o=0; o<c_size; o++) {
-            d = *(tile+i*c_size+o);
-            Serial.println (String("") + "data " + i + " * " + o + ": "+ d);
-        }
-    }
     //send_data ();
     //sleep_mode ();
 }
