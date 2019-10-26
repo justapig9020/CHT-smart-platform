@@ -18,6 +18,8 @@
     -----|-----|---------
     DATA |[2,5]| data, b0 > 2, b1 > 3, b2 > 4, b3 > 5
     ---------------------
+    
+    Wire the serial pins of both arduino and wifi
 
    ====================== */
 
@@ -30,7 +32,6 @@
 #define WIDE 4 // The wide of data bus, code must be modify when wide over 8 bits
 #define FREQ 100   // The frequence of clock
 #define BAUD 115200 // The baud rate of serial
-//#define DEBUG  // Set the debug mode (Modify DEBUG to _DEBUG to disable the debug functions)
 
 /* ================= */
 
@@ -51,7 +52,6 @@ inline void sel_on()
     digitalWrite (SEL, 0);
 }
 
-//Select OFF
 inline void sel_off()
 {
     char ret;
@@ -78,7 +78,6 @@ inline void wait_wifi()
 }
 
 // To initialize the size of tile
-// suppose the value will be assign form gateway 
 char *init_size()
 {
     char *arr = NULL;
@@ -127,7 +126,6 @@ void setup()
 
 void loop() 
 {
-    //Serial.println ("\n==== Loop ====");
     static int n = 0;
     Serial.print ('S');
     for (int i=0; i<r_size; i++) {
@@ -135,7 +133,6 @@ void loop()
             char buff;
             int desti;
             buff = get_data () + 'A';
-            //buff = 'A' + n;
             Serial.print (buff);
             exe_clk ();
         }
